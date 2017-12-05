@@ -37,9 +37,8 @@ static t_list	*get_current_file(t_list **alst, int fd)
 	return (current);
 }
 
-static int		get_next_line_perform(const int fd, char **line, char **content)
+static int		perform(const int fd, char **line, char **content, char *buf)
 {
-	char		buf[BUFF_SIZE + 1];
 	char		*tmp;
 	int			lnlen;
 	int			ret;
@@ -68,9 +67,13 @@ int				get_next_line(const int fd, char **line)
 {
 	static t_list	*file = NULL;
 	t_list			*current_file;
+	char			*buf;
+	int			status;
 
-	if (fd < 0 || !line)
+	if (fd < 0 || !line || !(buf = (char*)malloc(sizeof(char) * (BUFF_SIZE + 1))))
 		return (-1);
 	current_file = get_current_file(&file, fd);
-	return (get_next_line_perform(fd, line, (char **)&current_file->content));
+	status = perform(fd, line, (char **)&current_file->content, buf);
+	free(buf);
+	return(status);
 }
