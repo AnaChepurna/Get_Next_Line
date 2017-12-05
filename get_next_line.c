@@ -24,21 +24,17 @@ static int		ft_strclen(char *str, char c)
 
 static t_list	*get_current_file(t_list **alst, int fd)
 {
-	if (!*alst)
+	t_list	*current;
+
+	current = *alst;
+	while (current)
 	{
-		*alst = ft_lstnew(NULL, 0);
-		(*alst)->content_size = fd;
+		if (current->content_size == fd)
+			return (current);
+		current = current->next;
 	}
-	if ((*alst)->content_size == (size_t)fd)
-		return (*alst);
-	else if ((*alst)->next)
-		return (get_current_file(&((*alst)->next), fd));
-	else
-	{
-		(*alst)->next = ft_lstnew(NULL, 0);
-		(*alst)->next->content_size = fd;
-		return ((*alst)->next);
-	}
+	current  = ft_lstnew(ft_strnew(1), fd);
+	return (current);
 }
 
 static int		get_next_line_perform(const int fd, char **line, char **content)
@@ -48,8 +44,6 @@ static int		get_next_line_perform(const int fd, char **line, char **content)
 	int			lnlen;
 	int			ret;
 
-	if (!*content)
-		*content = ft_strnew(1);
 	while (!ft_strchr(*content, '\n') && (ret = read(fd, buf, BUFF_SIZE)))
 	{
 		if (ret == -1)
@@ -72,7 +66,7 @@ static int		get_next_line_perform(const int fd, char **line, char **content)
 
 int				get_next_line(const int fd, char **line)
 {
-	static t_list	*file;
+	static t_list	*file = NULL;
 	t_list			*current_file;
 
 	if (fd < 0 || !line)
