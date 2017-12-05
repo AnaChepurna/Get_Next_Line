@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
 static int		ft_strclen(char *str, char c)
 {
@@ -33,8 +34,9 @@ static t_list	*get_current_file(t_list **alst, int fd)
 			return (current);
 		current = current->next;
 	}
-	current  = ft_lstnew(ft_strnew(1), fd);
-	return (current);
+	ft_lstadd(alst, ft_lstnew("", 1));
+	(*alst)->content_size = fd;
+	return (*alst);
 }
 
 static int		perform(const int fd, char **line, char **content, char *buf)
@@ -65,7 +67,7 @@ static int		perform(const int fd, char **line, char **content, char *buf)
 
 int				get_next_line(const int fd, char **line)
 {
-	static t_list	*file = NULL;
+	static t_list	*file;
 	t_list			*current_file;
 	char			*buf;
 	int			status;
