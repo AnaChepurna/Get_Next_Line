@@ -13,9 +13,9 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-static int		ft_strclen(char *str, char c)
+static size_t		ft_strclen(char *str, char c)
 {
-	int			i;
+	size_t			i;
 
 	i = 0;
 	while (str[i] && str[i] != c)
@@ -42,8 +42,8 @@ static t_list	*get_current_file(t_list **alst, int fd)
 static int		perform(const int fd, char **line, char **content, char *buf)
 {
 	char		*tmp;
-	int			lnlen;
-	int			ret;
+	size_t			lnlen;
+	ssize_t			ret;
 
 	while (!ft_strchr(*content, '\n') && (ret = read(fd, buf, BUFF_SIZE)))
 	{
