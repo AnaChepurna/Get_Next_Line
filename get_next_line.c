@@ -6,14 +6,13 @@
 /*   By: achepurn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/09 16:25:45 by achepurn          #+#    #+#             */
-/*   Updated: 2017/11/24 20:43:39 by achepurn         ###   ########.fr       */
+/*   Updated: 2017/12/07 12:06:15 by achepurn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
-static size_t		ft_strclen(char *str, char c)
+static size_t	ft_strclen(char *str, char c)
 {
 	size_t			i;
 
@@ -30,7 +29,7 @@ static t_list	*get_current_file(t_list **alst, int fd)
 	current = *alst;
 	while (current)
 	{
-		if (current->content_size == fd)
+		if ((int)current->content_size == fd)
 			return (current);
 		current = current->next;
 	}
@@ -41,7 +40,7 @@ static t_list	*get_current_file(t_list **alst, int fd)
 
 static int		perform(const int fd, char **line, char **content, char *buf)
 {
-	char		*tmp;
+	char			*tmp;
 	size_t			lnlen;
 	ssize_t			ret;
 
@@ -70,12 +69,13 @@ int				get_next_line(const int fd, char **line)
 	static t_list	*file;
 	t_list			*current_file;
 	char			*buf;
-	int			status;
+	int				status;
 
-	if (fd < 0 || !line || !(buf = (char*)malloc(sizeof(char) * (BUFF_SIZE + 1))))
+	if (fd < 0 || !line ||
+			!(buf = (char*)malloc(sizeof(char) * (BUFF_SIZE + 1))))
 		return (-1);
 	current_file = get_current_file(&file, fd);
 	status = perform(fd, line, (char **)&current_file->content, buf);
 	free(buf);
-	return(status);
+	return (status);
 }
