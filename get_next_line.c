@@ -6,21 +6,11 @@
 /*   By: achepurn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/09 16:25:45 by achepurn          #+#    #+#             */
-/*   Updated: 2017/12/07 12:06:15 by achepurn         ###   ########.fr       */
+/*   Updated: 2017/12/07 20:41:12 by achepurn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
-static size_t	ft_strclen(char *str, char c)
-{
-	size_t			i;
-
-	i = 0;
-	while (str[i] && str[i] != c)
-		i++;
-	return (i);
-}
 
 static t_list	*get_current_file(t_list **alst, int fd)
 {
@@ -41,10 +31,12 @@ static t_list	*get_current_file(t_list **alst, int fd)
 static int		perform(const int fd, char **line, char **content, char *buf)
 {
 	char			*tmp;
-	size_t			lnlen;
+	size_t			len;
 	ssize_t			ret;
+	char			*ln;
 
-	while (!ft_strchr(*content, '\n') && (ret = read(fd, buf, BUFF_SIZE)))
+	while (!(ln = ft_strchr(*content, '\n')) &&
+			(ret = read(fd, buf, BUFF_SIZE)))
 	{
 		if (ret == -1)
 			return (-1);
@@ -55,11 +47,11 @@ static int		perform(const int fd, char **line, char **content, char *buf)
 	}
 	if (!ret && !ft_strlen(*content))
 		return (0);
-	lnlen = ft_strclen(*content, '\n') + 1;
-	*line = ft_strnew(lnlen);
-	ft_strncpy(*line, *content, lnlen - 1);
+	len = ft_strlen(*content);
+	*line = ft_strnew(ln ? ln - *content : len);
+	ft_strncpy(*line, *content, ln ? ln - *content : len);
 	tmp = *content;
-	*content = ft_strdup(*content + lnlen);
+	*content = ft_strdup(ln ? ln + 1 : "");
 	free(tmp);
 	return (1);
 }
@@ -71,7 +63,7 @@ int				get_next_line(const int fd, char **line)
 	char			*buf;
 	int				status;
 
-	if (fd < 0 || !line ||
+	if (fd < 0 || !line || BUFF_SIZE == 0 ||
 			!(buf = (char*)malloc(sizeof(char) * (BUFF_SIZE + 1))))
 		return (-1);
 	current_file = get_current_file(&file, fd);
